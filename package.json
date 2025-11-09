@@ -1,0 +1,20 @@
+{
+  "name": "streamingavatar",
+  "version": "1.0.0",
+  "description": "## Pre-Requisites",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/genai": "^1.29.0",
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "multer": "^2.0.2",
+    "openai": "^4.104.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.4"
+  }
+}

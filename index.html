@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🎬 AI Avatar Interview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: #0b1220;
+      color: #eaeff8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .wrap {
+      background: #121b2f;
+      padding: 20px;
+      border-radius: 12px;
+      width: 950px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+    h2 { text-align: center; margin-bottom: 10px; }
+    .videos { display: flex; justify-content: space-between; gap: 10px; }
+    video { width: 49%; height: 280px; background: black; border-radius: 8px; }
+    .controls { text-align: center; margin-top: 10px; }
+    input, select, button {
+      margin: 5px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+    }
+    input, select {
+      background: #1a2338;
+      color: #fff;
+      border: 1px solid #2b3a5a;
+    }
+    button {
+      background: linear-gradient(90deg, #3373ff, #7098ff);
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+    button:hover { opacity: 0.9; }
+    .status {
+      background: #0e162b;
+      border-radius: 6px;
+      padding: 8px;
+      font-family: monospace;
+      font-size: 13px;
+      height: 170px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+    .answer-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .badge {
+      background: #0f1d3c;
+      border: 1px solid #2b3a5a;
+      color: #a9c1ff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+    .hidden { display: none; }
+    .result {
+      background: #0f1b33;
+      border: 1px solid #2b3a5a;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 8px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>🎤 AI Avatar Interview</h2>
+    <div class="videos">
+      <video id="avatarVideo" autoplay playsinline></video>
+      <video id="userVideo" autoplay muted playsinline></video>
+    </div>
+
+    <div class="controls">
+      <input id="userEmail" type="email" value="xyz@gmail.com" />
+      <select id="roleSelect">
+        <option>Lightman</option>
+        <option>Cameraman</option>
+        <option>Director</option>
+        <option>Sound Engineer</option>
+        <option>Editor</option>
+      </select>
+      <button id="startInterviewBtn">Start Interview</button>
+      <button id="closeBtn">End</button>
+
+      <!-- Candidate info populated from profile -->
+      <div class="answer-cta hidden" id="profileInfo">
+        <span class="badge" id="profileNameBadge"></span>
+        <span class="badge" id="profileEmailBadge"></span>
+        <span class="badge" id="profileOccupationBadge"></span>
+        <span class="badge" id="profileRateBadge"></span>
+      </div>
+
+      <div class="answer-cta hidden" id="answerCta">
+        <span class="badge" id="answerHint">⏳ You can answer within 1 minute</span>
+        <button id="startAnswerBtn">Start Answer</button>
+        <button id="endAnswerBtn" class="hidden">End Answer</button>
+        <span class="badge hidden" id="recordingBadge">Recording… 60s</span>
+      </div>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="resultBox" class="result hidden"></div>
+  </div>
+
+  <script type="module" src="index.js"></script>
+</body>
+</html>

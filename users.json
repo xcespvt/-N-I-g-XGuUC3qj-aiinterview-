@@ -1,0 +1,26 @@
+[
+  {
+    "id": "lrossi",
+    "password": "Pass@123",
+    "name": "Luca Rossi",
+    "gender": "male"
+  },
+  {
+    "id": "gbianchi",
+    "password": "Pass@123",
+    "name": "Giuseppe Bianchi",
+    "gender": "male"
+  },
+  {
+    "id": "sromano",
+    "password": "Pass@123",
+    "name": "Sofia Romano",
+    "gender": "female"
+  },
+  {
+    "id": "cconti",
+    "password": "Pass@123",
+    "name": "Chiara Conti",
+    "gender": "female"
+  }
+]

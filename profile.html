@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Candidate Details — AI Avatar Interview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="index.css" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #0d1424, #1c2b4a);
+        font-family: "Inter", sans-serif;
+        color: #fff;
+      }
+
+      .wrap {
+        background: #121b2f;
+        padding: 40px 36px;
+        border-radius: 16px;
+        width: 520px;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 16px;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .row {
+        display: flex;
+        gap: 14px;
+      }
+
+      .row > * {
+        flex: 1;
+      }
+
+      input {
+        padding: 12px 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        font-size: 15px;
+        outline: none;
+        transition: border 0.2s ease;
+      }
+
+      input:focus {
+        border-color: #4f9fff;
+      }
+
+      button {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #4f9fff, #6b7bff);
+        color: #fff;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.25s ease;
+        margin-top: 6px;
+      }
+
+      button:hover {
+        background: linear-gradient(90deg, #3d8bff, #5a6aff);
+      }
+
+      .status {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        min-height: 36px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: #e5e7eb;
+        margin-top: 18px;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 8px;
+      }
+
+      @media (max-width: 600px) {
+        .wrap {
+          width: 90%;
+          padding: 28px 22px;
+        }
+        .row {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h2>Candidate Details</h2>
+      <form id="profileForm" class="form">
+        <div class="row">
+          <input id="name" type="text" placeholder="Full Name" required />
+          <input id="email" type="email" placeholder="Email" required />
+        </div>
+        <input id="address" type="text" placeholder="Address" required />
+        <input id="location" type="text" placeholder="Location (City, Country)" required />
+        <div class="row">
+          <input id="occupation" type="text" placeholder="Occupation (e.g., Lightman)" required />
+          <input id="hourlyRate" type="number" step="0.01" min="0" placeholder="Hourly Rate (€/h)" required />
+        </div>
+        <div class="actions">
+          <button type="submit" id="saveProfileBtn">Continue to Interview</button>
+        </div>
+      </form>
+      <div id="statusMsg" class="status" aria-live="polite"></div>
+    </div>
+
+    <script type="module" src="profile.js"></script>
+  </body>
+</html>

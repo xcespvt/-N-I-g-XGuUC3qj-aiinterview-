@@ -1,0 +1,336 @@
+[
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      "What are two core responsibilities of a Lightman?",
+      "Describe how you handle challenges in your Lightman workflow."
+    ],
+    "answers": [
+      "",
+      ""
+    ],
+    "timestamp": "2025-11-09T14:52:14.148Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "How do you differentiate between a genuine emotional reaction and a fabricated one, especially when subtle cues are involved?",
+        "rationale": "This assesses their ability to apply microexpression analysis and behavioral observation skills to discern truth from deception in nuanced situations."
+      },
+      {
+        "question": "Describe a time you had to quickly adapt your questioning strategy after initially misinterpreting someone's behavior. What did you learn?",
+        "rationale": "This explores their flexibility, self-awareness, and ability to learn from mistakes in high-pressure, dynamic interview settings."
+      }
+    ],
+    "answers": [
+      "😍😍😍😍😍😍",
+      "😍😍😍😍😍😍😍😍"
+    ],
+    "score": 1,
+    "summary": "The interview appears to consist entirely of the interviewer asking questions (represented by [object Object]), to which the interviewee responds with a string of heart emojis. Without knowing the actual questions, it's impossible to assess the content or quality of the interview, but the enthusiastic (though uninformative) responses suggest a very positive, albeit nonsensical, interaction. It is impossible to summarize the *content* of the interview since the questions are hidden. The responses indicate strong positive sentiment but lack substance.",
+    "timestamp": "2025-11-09T14:55:40.484Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "How do you differentiate between a genuine emotional reaction and a fabricated one, especially when subtle cues are involved?",
+        "rationale": "This assesses their ability to apply microexpression analysis and behavioral observation skills to discern truth from deception in nuanced situations."
+      },
+      {
+        "question": "Describe a time you had to quickly adapt your questioning strategy after initially misinterpreting someone's behavior. What did you learn?",
+        "rationale": "This explores their flexibility, self-awareness, and ability to learn from mistakes in high-pressure, dynamic interview settings."
+      }
+    ],
+    "answers": [
+      "😍😍😍😍😍😍",
+      "😍😍😍😍😍😍😍😍",
+      "😍😍😍😍"
+    ],
+    "score": 10,
+    "summary": "The interview consists of two questions, and the response to each question is a string of heart-eye emojis. This suggests a very positive or enthusiastic reaction, potentially indicating agreement or strong approval of the questions.",
+    "timestamp": "2025-11-09T14:55:52.226Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "Imagine a client insists they're being truthful despite clear indicators to the contrary. How would you navigate this situation while still upholding ethical principles?",
+        "rationale": "Tests the candidate's ability to balance suspicion with professional conduct and ethical obligations."
+      },
+      {
+        "question": "Describe a time you accurately assessed someone's deception based solely on subtle nonverbal cues. What were those cues and how did you interpret them?",
+        "rationale": "Evaluates the candidate's observation skills, understanding of body language, and ability to draw accurate conclusions."
+      }
+    ],
+    "answers": [
+      "📢 Share this video with your friends on social media.",
+      "Mackerel Thank you all for watching."
+    ],
+    "score": 1,
+    "summary": "The interview appears to be extremely short and consists of a request to share the video and a sign-off with the word 'Mackerel'. There is virtually no substantial content.",
+    "timestamp": "2025-11-09T14:59:27.877Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "Describe a situation where you had to detect deception in a high-stakes environment with limited information. What indicators did you rely on?",
+        "rationale": "This question assesses the candidate's ability to apply theoretical knowledge to real-world scenarios and highlights their reliance on specific, observable indicators of deception."
+      },
+      {
+        "question": "How would you approach analyzing a subject who is selectively truthful, omitting crucial details while maintaining a facade of honesty? What strategies would you employ to uncover the hidden information?",
+        "rationale": "This explores the candidate's understanding of complex deception strategies and their ability to formulate effective counter-interrogation techniques to elicit the truth."
+      }
+    ],
+    "answers": [
+      "[Video recorded: response_q1.webm]",
+      "[Video recorded: response_q2.webm]"
+    ],
+    "score": 7,
+    "summary": "...",
+    "timestamp": "2025-11-09T15:01:27.474Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "Describe a time you had to detect deception where the stakes were particularly high. What specific indicators did you focus on, and what was the outcome?",
+        "rationale": "This question probes their practical experience, focusing on high-pressure situations and specific techniques, revealing their analytical skills and ability to apply their knowledge."
+      },
+      {
+        "question": "Beyond microexpressions, what less obvious behavioral cues do you find most reliable in assessing truthfulness, and why?",
+        "rationale": "This question explores their depth of knowledge beyond surface-level techniques and demonstrates their understanding of a broader range of deception indicators and their underlying principles."
+      }
+    ],
+    "answers": [
+      "[Video recorded: response_q1.webm]",
+      "[Video recorded: response_q2.webm]"
+    ],
+    "score": 7,
+    "summary": "The interviewee highlights their strengths as hard work, teamwork, and problem-solving skills. They acknowledge a weakness in delegating tasks.",
+    "timestamp": "2025-11-09T15:04:33.917Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "Describe a time you accurately identified microexpressions to determine if someone was being truthful, and what actions you took as a result."
+      },
+      {
+        "question": "How do you maintain objectivity and avoid letting personal biases influence your analysis of someone's behavior?"
+      }
+    ],
+    "answers": [
+      "[Video recorded: response_q1.webm]",
+      "[Video recorded: response_q2.webm]"
+    ],
+    "score": 6,
+    "summary": "Fallback summary",
+    "timestamp": "2025-11-09T15:08:43.922Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "Describe a situation where you had to detect deception based on subtle behavioral cues and what specific indicators led you to your conclusion.",
+        "rationale": "This probes their ability to apply microexpression reading and behavioral analysis skills, and to articulate the reasoning behind their judgment."
+      },
+      {
+        "question": "How do you manage personal bias and ensure objectivity when evaluating someone's credibility, especially in high-stakes situations?",
+        "rationale": "This assesses their awareness of potential biases and their strategies for maintaining impartiality in their analysis, crucial for reliable detection of deception."
+      }
+    ],
+    "answers": [
+      "[Video recorded: response_q1.webm]",
+      "[Video recorded: response_q2.webm]"
+    ],
+    "score": 6,
+    "summary": "Fallback summary",
+    "timestamp": "2025-11-09T15:11:19.519Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "Given a seemingly insignificant anomaly, how do you prioritize investigating it amidst competing priorities, and what specific techniques do you employ to determine its potential significance?"
+      },
+      {
+        "question": "Describe a time when your interpretation of micro-expressions was challenged or proven incorrect. How did you handle the situation and what did you learn from it?"
+      }
+    ],
+    "answers": [
+      "[Video recorded: response_q1.webm]",
+      "[Video recorded: response_q2.webm]"
+    ],
+    "score": 6,
+    "summary": "Fallback summary",
+    "timestamp": "2025-11-09T15:12:46.828Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "Describe a time when you had to quickly analyze a complex situation involving deception or hidden motives. How did you approach it, and what was the outcome?",
+        "rationale": "Tests analytical skills under pressure and ability to identify deception, core Lightman skillset."
+      },
+      {
+        "question": "Imagine you're observing two individuals with conflicting body language and verbal statements. What are the first three microexpressions or non-verbal cues you would focus on to determine who is being truthful, and why?",
+        "rationale": "Assesses specific knowledge of microexpressions and ability to prioritize cues in a real-time situation, revealing practical application of the Lightman method."
+      }
+    ],
+    "answers": [
+      "[Video recorded: response_q1.webm]",
+      "[Video recorded: response_q2.webm]"
+    ],
+    "score": 6,
+    "summary": "Fallback summary",
+    "timestamp": "2025-11-09T15:16:36.916Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "Describe a situation where you had to quickly assess a person's credibility and accuracy. What strategies did you employ, and what was the outcome?"
+      },
+      {
+        "question": "Lie detection is nuanced. What are some common misconceptions about body language and verbal cues related to deception, and how do you avoid falling into those traps?"
+      }
+    ],
+    "answers": [
+      "[Video recorded: response_q1.webm]",
+      "[Video recorded: response_q2.webm]"
+    ],
+    "score": 6,
+    "summary": "Fallback summary",
+    "timestamp": "2025-11-09T15:19:59.622Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "How do you approach identifying micro-expressions in high-stakes, rapidly evolving situations where emotional displays are deliberately masked?",
+        "justification": "Tests ability to apply Ekman's theories under pressure and discern genuine emotions amidst deception."
+      },
+      {
+        "question": "Describe a time you successfully used your expertise in nonverbal communication to resolve a conflict or de-escalate a tense situation. What specific cues did you observe and how did you respond?",
+        "justification": "Demonstrates practical application of skills, problem-solving abilities, and understanding of behavioral responses."
+      }
+    ],
+    "answers": [
+      "[Video recorded: response_q1.webm]",
+      "[Video recorded: response_q2.webm]"
+    ],
+    "score": 6,
+    "summary": "Fallback summary",
+    "timestamp": "2025-11-09T15:23:05.774Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      {
+        "question": "Describe a time you had to quickly adapt your lighting plan due to unforeseen circumstances on set. What was the challenge, and how did you overcome it?"
+      },
+      {
+        "question": "What is your approach to collaborating with the cinematographer and director to achieve the desired visual style and mood of a scene?"
+      }
+    ],
+    "answers": [
+      "[Video recorded: response_q1.webm]",
+      "[Video recorded: response_q2.webm]"
+    ],
+    "score": 0,
+    "summary": "The provided interview data is incomplete, consisting only of placeholders like '[object Object]' and '[video response]' for both questions and answers. Therefore, it's impossible to assess the candidate's suitability for the Lightman role or provide a meaningful summary.",
+    "timestamp": "2025-11-09T15:29:17.638Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      "Describe your experience with various lighting instruments and their applications in achieving specific moods and visual effects.",
+      "How do you prioritize safety on set while working with complex lighting setups and tight deadlines?"
+    ],
+    "answers": [
+      "No experience.",
+      "No experience, but have one."
+    ],
+    "score": 7,
+    "summary": "Based on the provided context (and assuming the 'video transcript attached earlier' contains relevant information, which is not directly provided), this is an interview excerpt where the candidate is asked about their experience with lighting instruments and their use in creating specific moods and visual effects. The second question focuses on their approach to prioritizing safety on set when dealing with complex lighting setups under tight deadlines. Without the actual video transcripts, a detailed summary of the candidate's specific responses is impossible.",
+    "timestamp": "2025-11-09T15:36:02.080Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      "Describe your experience lighting a scene with challenging mixed lighting (e.g., daylight and practicals). How did you balance them effectively?",
+      "What are your go-to techniques for achieving a specific mood or emotion with lighting in a scene?"
+    ],
+    "answers": [
+      "I don't have any experience in this. I don't have any experience. Huna score.",
+      "I have started by emotional tone of the scene whether it's warm and intimate or tense."
+    ],
+    "score": 5,
+    "summary": "The candidate's experience and techniques in lighting scenes with challenging mixed lighting, such as balancing daylight and practicals, and achieving specific moods or emotions with lighting are detailed in the attached video transcript. Without access to the video transcript, I cannot provide specific details about their approach or the effectiveness of their methods.",
+    "timestamp": "2025-11-09T15:41:47.679Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      "Describe a time you had to troubleshoot a complex lighting issue on set under pressure.",
+      "What are your preferred methods for achieving specific moods or effects with lighting?"
+    ],
+    "answers": [
+      "Uh, I don't have any idea about it. So yeah, you can move to next question. Yeah.",
+      "I don't have idea about it. You can move to next question, please."
+    ],
+    "score": 7,
+    "summary": "The interviewee describes a time they had to troubleshoot a complex lighting issue on set under pressure, likely detailing the problem, their approach, and the resolution. They also elaborate on their preferred methods for achieving specific moods or effects with lighting, indicating their understanding of lighting techniques and creative choices.",
+    "timestamp": "2025-11-09T16:12:20.943Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      "Describe your experience lighting scenes with challenging color palettes or practical light sources.",
+      "How do you approach achieving a director's vision for a scene's mood and atmosphere through lighting?"
+    ],
+    "answers": [
+      "I don't have any idea about it. Move to the next question, please.",
+      "I don't have any idea about it."
+    ],
+    "score": 6,
+    "summary": "Fallback summary",
+    "timestamp": "2025-11-09T16:14:45.827Z"
+  },
+  {
+    "username": "xyz@gmail.com",
+    "role": "Lightman",
+    "questions": [
+      "Describe a time you successfully troubleshooted a complex lighting setup on set under a tight deadline.",
+      "What is your understanding of color temperature and how do you utilize it to create specific moods in a scene?"
+    ],
+    "answers": [
+      "Um, I think I don't have any idea about it. Can you please move forward with the next question?",
+      "I don't have idea about it.",
+      "I don't have any idea about it."
+    ],
+    "score": 5,
+    "summary": "Based on the questions asked (troubleshooting complex lighting under pressure and understanding/utilizing color temperature), the interview likely focuses on a candidate's technical lighting skills and problem-solving abilities. The candidate was asked to provide a specific example of successful troubleshooting under a time crunch, indicating an assessment of practical experience and quick thinking. The color temperature question gauges theoretical knowledge and its application to achieving desired artistic effects. Without the video transcript, it's impossible to assess the *quality* of the responses, but the *content* of the interview aims to evaluate both practical skills and theoretical understanding of lighting.",
+    "timestamp": "2025-11-09T16:30:25.992Z"
+  }
+]

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login — AI Avatar Interview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="index.css" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #0d1424;
+        padding: 20px;
+        margin: 0;
+        font-family: "Inter", sans-serif;
+      }
+
+      .login-wrap {
+        background: #121b2f;
+        padding: 40px 32px;
+        border-radius: 16px;
+        width: 380px;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 12px;
+        color: #fff;
+      }
+
+      .hint {
+        font-size: 13px;
+        color: #a9c1ff;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      input {
+        padding: 12px 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        font-size: 15px;
+        outline: none;
+        transition: border 0.2s ease;
+      }
+
+      input:focus {
+        border-color: #4f9fff;
+      }
+
+      button {
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #4f9fff, #6b7bff);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.25s ease;
+        margin-top: 8px;
+      }
+
+      button:hover {
+        background: linear-gradient(90deg, #3d8bff, #5a6aff);
+      }
+
+      .status-msg {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        min-height: 36px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: #e5e7eb;
+        margin-top: 18px;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 16px;
+      }
+
+      .link-btn {
+        background: transparent;
+        color: #a9c1ff;
+        border: 1px dashed rgba(169, 193, 255, 0.4);
+        padding: 8px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: border 0.2s ease, color 0.2s ease;
+      }
+
+      .link-btn:hover {
+        color: #d0ddff;
+        border-color: rgba(169, 193, 255, 0.6);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-wrap">
+      <h2>Login</h2>
+      <div class="hint">Use seeded accounts for demo</div>
+      <form id="loginForm" class="form">
+        <input id="loginId" type="text" placeholder="Login ID (e.g., lrossi)" required />
+        <input id="password" type="password" placeholder="Password" required />
+        <button type="submit" id="loginBtn">Sign In</button>
+      </form>
+      <div id="statusMsg" class="status-msg" aria-live="polite"></div>
+      <div class="actions">
+        <a class="link-btn" href="index.html">Go to Interview Page</a>
+      </div>
+    </div>
+
+    <script type="module" src="login.js"></script>
+  </body>
+</html>
