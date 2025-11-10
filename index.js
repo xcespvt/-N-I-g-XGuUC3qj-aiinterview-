@@ -444,7 +444,7 @@ async function transcribeSpeech(maxSeconds = 60) {
 
 async function askNext(role, username) {
   if (qIndex >= questions.length) {
-    // === Finalize interview ===
+    // finalize
     const r = await fetch('/gemini/summary', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -452,7 +452,6 @@ async function askNext(role, username) {
     });
     const js = await r.json();
     log(`<b>Summary:</b> ${js.summary}<br><b>Score:</b> ${js.score}/10`);
-
     await fetch('/results/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -468,7 +467,6 @@ async function askNext(role, username) {
         summary: js.summary,
       }),
     });
-
     log('💾 Results saved.');
     DOM.resultBox.classList.remove('hidden');
     DOM.resultBox.textContent = `Final Score: ${js.score}/10 — ${js.summary}`;
@@ -477,10 +475,10 @@ async function askNext(role, username) {
 
   const q = questions[qIndex];
   log(`<b>Q${qIndex + 1}:</b> ${q}`);
-  await say(sessionInfo.session_id, q); // Avatar asks the question
+  await say(sessionInfo.session_id, q); // avatar speaks
   log('🗣️ Avatar asked question.');
 
-  // === Show "Start Answer" UI ===
+  // Show Start Answer UI (user clicks when avatar finishes)
   DOM.answerCta.classList.remove('hidden');
   DOM.answerHint.textContent = '⏳ You can answer within 1 minute';
   DOM.startAnswerBtn.disabled = false;
@@ -490,21 +488,28 @@ async function askNext(role, username) {
   // One-time handler for this question
   const onClick = async () => {
     DOM.startAnswerBtn.disabled = true;
-    DOM.answerHint.textContent = '🎤 Listening... please speak clearly.';
+    DOM.answerHint.textContent = 'Recording your answer…';
+
+    // 🔹 Start both video recording and speech recognition at the same time
+    const listenPromise = transcribeSpeech(60);
+    const blobPromise = startRecording(60);
+
     DOM.endAnswerBtn.classList.remove('hidden');
     DOM.endAnswerBtn.disabled = false;
 
-    // Start speech recognition only (no MediaRecorder conflict)
-    const transcript = await transcribeSpeech(60);
-
-    // Stop listening manually if end button clicked
     const onEnd = async () => {
       DOM.endAnswerBtn.disabled = true;
-      log('⏹️ Stopped listening manually.');
+      await stopRecording();
+      log('⏹️ Recording stopped manually.');
     };
+
     DOM.endAnswerBtn.addEventListener('click', onEnd, { once: true });
 
+    // Wait for both to complete
+    const [blob, transcript] = await Promise.all([blobPromise, listenPromise]);
+
     DOM.endAnswerBtn.classList.add('hidden');
+    DOM.endAnswerBtn.removeEventListener('click', onEnd);
 
     if (!transcript || transcript.trim().length === 0) {
       log('⚠️ No speech detected, moving to next question.');
@@ -522,12 +527,7 @@ async function askNext(role, username) {
     const resp = await fetch('/grade-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        question: q,
-        answer: transcript,
-        role,
-        session_id: sessionInfo?.session_id,
-      }),
+      body: JSON.stringify({ question: q, answer: transcript, role }),
     });
 
     const data = await resp.json();
@@ -539,16 +539,15 @@ async function askNext(role, username) {
       answers.push(transcript);
     } else {
       log(`❌ Grading failed: ${data.error || 'Unknown error'}`);
-      answers.push('[Grading failed]');
     }
 
-    // === Hide CTA and move to next question ===
+    // Hide CTA before moving to next question
     DOM.answerCta.classList.add('hidden');
     qIndex++;
     askNext(role, username);
   };
 
-  // Attach one-time listener
+  // attach handler
   DOM.startAnswerBtn.removeEventListener('click', onClick);
   DOM.startAnswerBtn.addEventListener('click', onClick, { once: true });
 }
