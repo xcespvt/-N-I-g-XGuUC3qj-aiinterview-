@@ -444,15 +444,15 @@ async function transcribeSpeech(maxSeconds = 60) {
 
 async function askNext(role, username) {
   if (qIndex >= questions.length) {
-    // ✅ All questions done → finalize
+    // === Finalize interview ===
     const r = await fetch('/gemini/summary', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ session_id: sessionInfo.session_id }),
     });
     const js = await r.json();
-
     log(`<b>Summary:</b> ${js.summary}<br><b>Score:</b> ${js.score}/10`);
+
     await fetch('/results/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -468,6 +468,7 @@ async function askNext(role, username) {
         summary: js.summary,
       }),
     });
+
     log('💾 Results saved.');
     DOM.resultBox.classList.remove('hidden');
     DOM.resultBox.textContent = `Final Score: ${js.score}/10 — ${js.summary}`;
@@ -476,32 +477,40 @@ async function askNext(role, username) {
 
   const q = questions[qIndex];
   log(`<b>Q${qIndex + 1}:</b> ${q}`);
-  await say(sessionInfo.session_id, q);
+  await say(sessionInfo.session_id, q); // Avatar asks the question
   log('🗣️ Avatar asked question.');
 
-  // Show the Start Answer UI
+  // === Show "Start Answer" UI ===
   DOM.answerCta.classList.remove('hidden');
   DOM.answerHint.textContent = '⏳ You can answer within 1 minute';
   DOM.startAnswerBtn.disabled = false;
   DOM.endAnswerBtn.classList.add('hidden');
   DOM.endAnswerBtn.disabled = true;
 
-  // One-time click handler
+  // One-time handler for this question
   const onClick = async () => {
     DOM.startAnswerBtn.disabled = true;
-    DOM.answerHint.textContent = '🎤 Listening... Please speak clearly.';
+    DOM.answerHint.textContent = '🎤 Listening... please speak clearly.';
     DOM.endAnswerBtn.classList.remove('hidden');
     DOM.endAnswerBtn.disabled = false;
 
-    // Start browser speech recognition
+    // Start speech recognition only (no MediaRecorder conflict)
     const transcript = await transcribeSpeech(60);
+
+    // Stop listening manually if end button clicked
+    const onEnd = async () => {
+      DOM.endAnswerBtn.disabled = true;
+      log('⏹️ Stopped listening manually.');
+    };
+    DOM.endAnswerBtn.addEventListener('click', onEnd, { once: true });
+
     DOM.endAnswerBtn.classList.add('hidden');
 
-    if (!transcript) {
-      log('⚠️ No speech detected. Skipping...');
+    if (!transcript || transcript.trim().length === 0) {
+      log('⚠️ No speech detected, moving to next question.');
       answers.push('[No response]');
-      qIndex++;
       DOM.answerCta.classList.add('hidden');
+      qIndex++;
       askNext(role, username);
       return;
     }
@@ -509,7 +518,7 @@ async function askNext(role, username) {
     log(`📝 Transcript: ${transcript}`);
     DOM.answerHint.textContent = 'Evaluating your answer...';
 
-    // Send transcript for grading
+    // === Send text to Gemini grading endpoint ===
     const resp = await fetch('/grade-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -533,16 +542,18 @@ async function askNext(role, username) {
       answers.push('[Grading failed]');
     }
 
-    // Hide CTA and move to next question
+    // === Hide CTA and move to next question ===
     DOM.answerCta.classList.add('hidden');
     qIndex++;
     askNext(role, username);
   };
 
-  // Attach handler cleanly
+  // Attach one-time listener
   DOM.startAnswerBtn.removeEventListener('click', onClick);
   DOM.startAnswerBtn.addEventListener('click', onClick, { once: true });
 }
+
+
 
 
 DOM.startBtn.addEventListener('click', startInterview);

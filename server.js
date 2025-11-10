@@ -20,10 +20,16 @@ app.use(express.static(path.join(__dirname, '.')));
 
 
 const apikeys = [
-  'AIzaSyDK_TYCAjIhf4QIFc3v0xFJj5gaaopm2PQ',
-  'AIzaSyAdq00ReOIjazjB2DBMNKNcmO0nXb6b550',
-  'AIzaSyArwTWrrMVzpJxqmsuZcnE0eSBCdysGOUo'
-]
+  'AIzaSyB95olvtD_Gucc1xeC2nNFoEILx7R3sn1k',
+  'AIzaSyD4vT4d4yStUGuTlS2aD5DhQN3Hu3z1Zj8',
+  'AIzaSyDRtm8kfnw7gdtZX8IUnXXOmaqj37qkNkI',
+  'AIzaSyDXEM2P7Zstuw3QXVOPKq3jOMnD9hFjaSc',
+  'AIzaSyDKiNW_VfYMYzZWnln5aZutEIx-NSj4VjA',
+  'AIzaSyDHWz9JsK-HKGftCtkgH06CvLyaZpnxJFM',
+  'AIzaSyCroOc1Ev5beb_6Aj8HhTL7cqpD5uP1ZQI',
+  'AIzaSyB8JK5EgnjZ5NvECkZQWaOn2BJx02BE5Ts'
+];
+
 
 function getRandomKey() {
   const idx = Math.floor(Math.random() * apikeys.length);
