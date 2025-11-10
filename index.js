@@ -1,9 +1,19 @@
 'use strict';
 
 // ==== Heygen API config ====
+
+
 const HEYGEN = {
-  apiKey: 'sk_V2_hgu_kxjYE74rslk_guugdgxvZebORGQVKXzZ4HYxgI8yoK2I', // <— replace
+  apiKeys: [
+    'sk_V2_hgu_kxjYE74rslk_guugdgxvZebORGQVKXzZ4HYxgI8yoK2I',
+    'sk_V2_hgu_kdm5NWurfdq_EXTqTF6pTOXwLlxtPkWP3YcjVFGTPnne'
+  ],
   serverUrl: 'https://api.heygen.com',
+  get apiKey() {
+    // pick a random key each time
+    const keys = this.apiKeys;
+    return keys[Math.floor(Math.random() * keys.length)];
+  },
 };
 
 // ==== DOM ====
@@ -12,6 +22,10 @@ const DOM = {
   userVideo: document.querySelector('#userVideo'),
   startBtn: document.querySelector('#startInterviewBtn'),
   closeBtn: document.querySelector('#closeBtn'),
+  // Camera permission CTA
+  cameraCta: document.querySelector('#cameraCta'),
+  enableCameraBtn: document.querySelector('#enableCameraBtn'),
+  cameraHint: document.querySelector('#cameraHint'),
   startAnswerBtn: document.querySelector('#startAnswerBtn'),
   endAnswerBtn: document.querySelector('#endAnswerBtn'),
   answerCta: document.querySelector('#answerCta'),
@@ -78,7 +92,13 @@ function loadCandidateProfile() {
 }
 
 async function startRecording(maxSeconds = 60) {
-  if (!userStream) await initUserCam();
+  if (!isStreamActive(userStream)) {
+    const ok = await enableCamera(true);
+    if (!ok) {
+      log('❌ Camera not available. Please enable permissions.');
+      return Promise.reject(new Error('camera_not_available'));
+    }
+  }
   recordedChunks = [];
   recorder = new MediaRecorder(userStream, { mimeType: 'video/webm' });
 
@@ -209,22 +229,96 @@ async function initAvatar() {
   }
 }
 
-// ==== Webcam access ====
-async function initUserCam() {
+// ==== Webcam access & permissions ====
+function isSecure() {
+  return window.isSecureContext || location.protocol === 'https:';
+}
+
+function isStreamActive(stream) {
+  return !!(stream && stream.getTracks && stream.getTracks().some((t) => t.readyState === 'live'));
+}
+
+function stopStream(stream) {
   try {
-    userStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: 480 },
-      audio: true,
-    });
+    stream?.getTracks()?.forEach((t) => t.stop());
+  } catch {}
+}
+
+function permissionErrorHint(err) {
+  const name = err && (err.name || err.code) || 'Error';
+  switch (name) {
+    case 'NotAllowedError':
+    case 'PermissionDeniedError':
+      return 'Permission denied. In browser settings, allow Camera and Microphone for this site.';
+    case 'NotFoundError':
+    case 'DevicesNotFoundError':
+      return 'No camera/mic found. Connect a device and retry.';
+    case 'NotReadableError':
+      return 'Camera is busy. Close other apps using the camera and retry.';
+    case 'OverconstrainedError':
+      return 'Requested constraints not supported. Try default camera settings.';
+    case 'SecurityError':
+      return 'Blocked by browser security policy. Use HTTPS or localhost to access camera.';
+    default:
+      return `Camera access failed: ${name}`;
+  }
+}
+
+async function enableCamera(forceReRequest = false) {
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      log('⚠️ getUserMedia not supported in this browser.');
+      DOM.cameraHint.textContent = 'Your browser does not support getUserMedia. Please update or use Chrome/Firefox/Safari.';
+      DOM.cameraCta.classList.remove('hidden');
+      return false;
+    }
+
+    if (!isSecure()) {
+      // Many browsers require secure context for camera/mic
+      log('🔐 Insecure context detected. Use HTTPS or localhost for camera access.');
+      DOM.cameraHint.textContent = 'Use HTTPS or localhost to enable camera & mic.';
+      DOM.cameraCta.classList.remove('hidden');
+      // We still attempt; some browsers may allow on HTTP, others will throw SecurityError
+    }
+
+    if (forceReRequest && isStreamActive(userStream)) {
+      stopStream(userStream);
+      userStream = null;
+    }
+
+    const constraints = {
+      video: { width: 480, facingMode: 'user' },
+      audio: { echoCancellation: true },
+    };
+
+    // Request via user gesture (button) and any time before recording
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    userStream = stream;
     DOM.userVideo.srcObject = userStream;
-  } catch {
-    log('⚠️ Cannot access webcam.');
+    DOM.userVideo.muted = true;
+    DOM.cameraHint.textContent = '✅ Camera enabled';
+    DOM.cameraCta.classList.add('hidden');
+    log('🎥 Camera & mic enabled.');
+    return true;
+  } catch (err) {
+    const hint = permissionErrorHint(err);
+    console.error('enableCamera error:', err);
+    log(`⚠️ ${hint}`);
+    DOM.cameraHint.textContent = `⚠️ ${hint}`;
+    DOM.cameraCta.classList.remove('hidden');
+    return false;
   }
 }
 
 // ==== Recorder ====
 async function recordAnswerFor(seconds) {
-  if (!userStream) await initUserCam();
+  if (!isStreamActive(userStream)) {
+    const ok = await enableCamera(true);
+    if (!ok) {
+      log('❌ Camera not available. Please enable permissions.');
+      return Promise.reject(new Error('camera_not_available'));
+    }
+  }
   const rec = new MediaRecorder(userStream, { mimeType: 'video/webm' });
   const chunks = [];
 
@@ -258,6 +352,14 @@ async function recordAnswerFor(seconds) {
 // ==== Interview flow (manual "Start Answer" after avatar finishes) ====
 async function startInterview() {
   if (!sessionInfo) return log('⚠️ Avatar not ready.');
+  // Ensure camera is enabled before starting the interview
+  if (!isStreamActive(userStream)) {
+    const ok = await enableCamera(false);
+    if (!ok) {
+      log('❌ Please enable camera & mic to proceed.');
+      return;
+    }
+  }
   const role = candidateProfile?.occupation || DOM.roleSelect.value;
   const username = candidateProfile?.email || DOM.userEmail.value;
   const hourlyRate = candidateProfile?.hourlyRate;
@@ -382,10 +484,15 @@ DOM.closeBtn.addEventListener('click', () => {
   if (pc) pc.close();
   log('🔚 Session closed.');
 });
+DOM.enableCameraBtn?.addEventListener('click', async () => {
+  // User-gesture-triggered permission request
+  await enableCamera(true);
+});
 
 // ==== Boot ====
 window.addEventListener('DOMContentLoaded', async () => {
   await initAvatar();
-  await initUserCam();
+  // Do not auto request camera on load; show CTA instead
+  DOM.cameraCta.classList.remove('hidden');
   loadCandidateProfile();
 });
