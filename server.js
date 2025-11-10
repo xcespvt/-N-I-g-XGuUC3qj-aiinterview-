@@ -76,50 +76,68 @@ app.post('/gemini/start-qa', async (req, res) => {
 });
 
 // ========== Record answer + transcribe + score ==========
-app.post('/grade-answer', upload.single('video'), async (req, res) => {
+// app.post('/grade-answer', upload.single('video'), async (req, res) => {
+//   try {
+//     const { question, role, session_id } = req.body;
+//     if (!req.file) return res.status(400).json({ error: 'Missing video file' });
+
+//     // Do NOT persist the uploaded media to disk; use buffer directly
+
+//     const audioB64 = base64(req.file.buffer);
+//     const transcribePrompt = [
+//       {
+//         text: "Transcribe this spoken answer clearly into English text only. Remove fillers and background noise."
+//       },
+//       {
+//         inlineData: {
+//           data: audioB64,
+//           mimeType: req.file.mimetype || 'audio/webm'
+//         }
+//       }
+//     ];
+
+//     const tr = await model.generateContent(transcribePrompt);
+//     const transcript = (tr.response.text() || '').trim();
+
+//     const scorePrompt = `Question: ${question}\nRole: ${role}\nAnswer: """${transcript}"""\n
+//       Evaluate the candidate’s relevance, clarity, and understanding of ${role} duties.
+//       Give a JSON: {"score": number (0-10), "feedback": "1 sentence feedback"}.`;
+//     const scoreTxt = await gText(scorePrompt);
+//     const scored = safeJSON(scoreTxt) || { score: 6, feedback: 'Default score.' };
+
+//     if (session_id && sessions.has(session_id)) {
+//       const sess = sessions.get(session_id);
+//       sess.answers.push(transcript);
+//       sess.scores.push(scored.score);
+//     }
+
+//     res.json({
+//       ok: true,
+//       transcript,
+//       score: scored.score,
+//       feedback: scored.feedback
+//     });
+//   } catch (err) {
+//     console.error('grade-answer failed:', err);
+//     res.status(500).json({ error: 'Failed to process answer' });
+//   }
+// });
+app.post('/grade-answer', async (req, res) => {
+  const { question, answer, role } = req.body;
   try {
-    const { question, role, session_id } = req.body;
-    if (!req.file) return res.status(400).json({ error: 'Missing video file' });
+    const prompt = `
+    You are an AI interviewer evaluating answers for the role of ${role}.
+    Question: ${question}
+    Candidate Answer: ${answer}
+    Return JSON like {"score": number, "feedback": "short feedback"} (score 0–10).
+    `;
 
-    // Do NOT persist the uploaded media to disk; use buffer directly
-
-    const audioB64 = base64(req.file.buffer);
-    const transcribePrompt = [
-      {
-        text: "Transcribe this spoken answer clearly into English text only. Remove fillers and background noise."
-      },
-      {
-        inlineData: {
-          data: audioB64,
-          mimeType: req.file.mimetype || 'audio/webm'
-        }
-      }
-    ];
-
-    const tr = await model.generateContent(transcribePrompt);
-    const transcript = (tr.response.text() || '').trim();
-
-    const scorePrompt = `Question: ${question}\nRole: ${role}\nAnswer: """${transcript}"""\n
-      Evaluate the candidate’s relevance, clarity, and understanding of ${role} duties.
-      Give a JSON: {"score": number (0-10), "feedback": "1 sentence feedback"}.`;
-    const scoreTxt = await gText(scorePrompt);
-    const scored = safeJSON(scoreTxt) || { score: 6, feedback: 'Default score.' };
-
-    if (session_id && sessions.has(session_id)) {
-      const sess = sessions.get(session_id);
-      sess.answers.push(transcript);
-      sess.scores.push(scored.score);
-    }
-
-    res.json({
-      ok: true,
-      transcript,
-      score: scored.score,
-      feedback: scored.feedback
-    });
+    const r = await model.generateContent(prompt);
+    const txt = r.response.text();
+    const json = safeJSON(txt) || { score: 5, feedback: "Default feedback" };
+    res.json(json);
   } catch (err) {
-    console.error('grade-answer failed:', err);
-    res.status(500).json({ error: 'Failed to process answer' });
+    res.status(500).json({ error: err.message });
   }
 });
 
