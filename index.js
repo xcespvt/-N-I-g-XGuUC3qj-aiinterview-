@@ -3,7 +3,8 @@
 // ==== Heygen API config with rotation ====
 const HEYGEN_KEYS = [
   'sk_V2_hgu_kxjYE74rslk_guugdgxvZebORGQVKXzZ4HYxgI8yoK2I',
-  'sk_V2_hgu_kdm5NWurfdq_EXTqTF6pTOXwLlxtPkWP3YcjVFGTPnne'
+  'sk_V2_hgu_kdm5NWurfdq_EXTqTF6pTOXwLlxtPkWP3YcjVFGTPnne',
+  'sk_V2_hgu_kLSjdmVpZI7_msA3AjqSYDExJxHl5Y5iiMY5IHwgpDg3'
   // Add more keys here if you have them
 ];
 
@@ -24,6 +25,7 @@ console.log('🎯 Using Heygen API Key:', HEYGEN.apiKey.substring(0, 10) + '...'
 // ==== DOM ====
 const DOM = {
   avatarVideo: document.querySelector('#avatarVideo'),
+  userVideo: document.querySelector('#userVideo'),
   startBtn: document.querySelector('#startInterviewBtn'),
   closeBtn: document.querySelector('#closeBtn'),
   startAnswerBtn: document.querySelector('#startAnswerBtn'),
@@ -92,16 +94,9 @@ function loadCandidateProfile() {
 }
 
 async function startRecording(maxSeconds = 60) {
-  if (!userStream) await initUserMic();
+  if (!userStream) await initUserCam();
   recordedChunks = [];
-  const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-    ? 'audio/webm;codecs=opus'
-    : MediaRecorder.isTypeSupported('audio/webm')
-    ? 'audio/webm'
-    : MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')
-    ? 'audio/ogg;codecs=opus'
-    : '';
-  recorder = mime ? new MediaRecorder(userStream, { mimeType: mime }) : new MediaRecorder(userStream);
+  recorder = new MediaRecorder(userStream, { mimeType: 'video/webm' });
 
   const blobPromise = new Promise((resolve) => {
     recordResolve = resolve;
@@ -111,8 +106,7 @@ async function startRecording(maxSeconds = 60) {
     if (e.data) recordedChunks.push(e.data);
   };
   recorder.onstop = () => {
-    const outType = mime || 'audio/webm';
-    const blob = new Blob(recordedChunks, { type: outType });
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
     if (recordResolve) recordResolve(blob);
   };
 
@@ -231,42 +225,30 @@ async function initAvatar() {
   }
 }
 
-// ==== Microphone access ====
-async function initUserMic() {
+// ==== Webcam access ====
+async function initUserCam() {
   try {
-    const insecure = location.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(location.hostname);
-    if (insecure) {
-      log('⚠️ Microphone access may be blocked on non-HTTPS. Use https or localhost.');
-    }
     userStream = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: true, noiseSuppression: true },
-      video: false,
+      video: { width: 480 },
+      audio: true,
     });
-    log('🎙️ Microphone ready.');
-  } catch (err) {
-    log(`⚠️ Cannot access microphone: ${err?.name || err?.message || 'unknown error'}`);
+    DOM.userVideo.srcObject = userStream;
+  } catch {
+    log('⚠️ Cannot access webcam.');
   }
 }
 
 // ==== Recorder ====
 async function recordAnswerFor(seconds) {
-  if (!userStream) await initUserMic();
-  const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-    ? 'audio/webm;codecs=opus'
-    : MediaRecorder.isTypeSupported('audio/webm')
-    ? 'audio/webm'
-    : MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')
-    ? 'audio/ogg;codecs=opus'
-    : '';
-  const rec = mime ? new MediaRecorder(userStream, { mimeType: mime }) : new MediaRecorder(userStream);
+  if (!userStream) await initUserCam();
+  const rec = new MediaRecorder(userStream, { mimeType: 'video/webm' });
   const chunks = [];
 
   rec.ondataavailable = (e) => chunks.push(e.data);
 
   return new Promise((resolve) => {
     rec.onstop = async () => {
-      const outType = mime || 'audio/webm';
-      const blob = new Blob(chunks, { type: outType });
+      const blob = new Blob(chunks, { type: 'video/webm' });
       resolve(blob);
     };
     rec.start();
@@ -420,6 +402,6 @@ DOM.closeBtn.addEventListener('click', () => {
 // ==== Boot ====
 window.addEventListener('DOMContentLoaded', async () => {
   await initAvatar();
-  await initUserMic();
+  await initUserCam();
   loadCandidateProfile();
 });
