@@ -2,7 +2,7 @@
 
 // ==== Heygen API config ====
 const HEYGEN = {
-  apiKey: 'sk_V2_hgu_kQmVtGBFmTZ_p3cx4U9NMCFgYBzJjkdwDFwl27OYjJuI', // <— replace
+  apiKey: 'sk_V2_hgu_koSjyYpAbCB_JkY9sUsQ8WCH5VJb4AU0Tj7TELwmMrfQ', // <— replace
   serverUrl: 'https://api.heygen.com',
 };
 
