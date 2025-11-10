@@ -30,7 +30,7 @@ function getRandomKey() {
   return apikeys[idx];
 }
   const genAI = new GoogleGenerativeAI(getRandomKey());
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash'});
 
 const sessions = new Map();
 
