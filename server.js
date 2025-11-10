@@ -18,7 +18,18 @@ app.get('/', (req, res) => {
 // Static assets (including index.html) after explicit root route
 app.use(express.static(path.join(__dirname, '.')));
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const apikeys = [
+  'AIzaSyDK_TYCAjIhf4QIFc3v0xFJj5gaaopm2PQ',
+  'AIzaSyAdq00ReOIjazjB2DBMNKNcmO0nXb6b550',
+  'AIzaSyArwTWrrMVzpJxqmsuZcnE0eSBCdysGOUo'
+]
+
+function getRandomKey() {
+  const idx = Math.floor(Math.random() * apikeys.length);
+  return apikeys[idx];
+}
+  const genAI = new GoogleGenerativeAI(getRandomKey());
 const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
 
 const sessions = new Map();
