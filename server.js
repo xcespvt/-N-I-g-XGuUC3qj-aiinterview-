@@ -122,7 +122,7 @@ app.post('/gemini/start-qa', async (req, res) => {
 //     res.status(500).json({ error: 'Failed to process answer' });
 //   }
 // });
-app.post('/grade-answer', async (req, res) => {
+app.post('/grade-text', async (req, res) => {
   const { question, answer, role } = req.body;
   try {
     const prompt = `
