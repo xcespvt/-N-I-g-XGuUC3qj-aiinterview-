@@ -1,171 +1,163 @@
-
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const multer = require('multer');
+require("dotenv").config();
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
+const multer = require("multer");
 const upload = multer();
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const fetch = require("node-fetch");
 
 const app = express();
 app.use(express.json());
 
-// Serve login page by default at root
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
-});
+// Serve login page
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "login.html")));
+app.use(express.static(path.join(__dirname, ".")));
 
-// Static assets (including index.html) after explicit root route
-app.use(express.static(path.join(__dirname, '.')));
-
-
-const apikeys = [
-  'AIzaSyDK_TYCAjIhf4QIFc3v0xFJj5gaaopm2PQ',
-  'AIzaSyAdq00ReOIjazjB2DBMNKNcmO0nXb6b550',
-  'AIzaSyArwTWrrMVzpJxqmsuZcnE0eSBCdysGOUo'
-]
-
-function getRandomKey() {
-  const idx = Math.floor(Math.random() * apikeys.length);
-  return apikeys[idx];
-}
-  const genAI = new GoogleGenerativeAI(getRandomKey());
-const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash'});
-
-const sessions = new Map();
+const OPENROUTER_KEYS = [
+  "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",
+  "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",
+  "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"
+];
+const OPENROUTER_API_KEY = OPENROUTER_KEYS[Math.floor(Math.random() * OPENROUTER_KEYS.length)];
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 function safeJSON(txt) {
-  try { return JSON.parse(txt); }
-  catch {
+  try {
+    return JSON.parse(txt);
+  } catch {
     const m = txt.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-    if (m) try { return JSON.parse(m[0]); } catch {}
+    if (m)
+      try {
+        return JSON.parse(m[0]);
+      } catch {}
   }
   return null;
 }
 
-async function gText(prompt) {
-  const r = await model.generateContent(prompt);
-  return r.response.text();
+// === Helper to call OpenRouter ===
+async function callOpenRouter(prompt) {
+  const body = {
+    model: "deepseek/deepseek-r1-0528-qwen3-8b:free",
+    messages: [{ role: "user", content: prompt }],
+  };
+  const r = await fetch(OPENROUTER_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "http://aiavatartest.hnsolutions.in",
+      "X-Title": "AI Avatar Interview",
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await r.json();
+  return (
+    data?.choices?.[0]?.message?.content?.trim() ||
+    JSON.stringify(data, null, 2)
+  );
 }
 
-function base64(buf) {
-  return Buffer.from(buf).toString('base64');
-}
+const sessions = new Map();
 
-// ========== Generate 5–10 questions automatically ==========
-app.post('/gemini/start-qa', async (req, res) => {
+// ========== Generate 5–10 questions ==========
+app.post("/gemini/start-qa", async (req, res) => {
   const { session_id, role, hourly_rate, candidate_name } = req.body;
-  if (!session_id) return res.status(400).json({ error: 'Missing session_id' });
+  if (!session_id) return res.status(400).json({ error: "Missing session_id" });
 
-  const rateInfo = hourly_rate ? ` The candidate's hourly rate is €${hourly_rate}/h.` : '';
-  const nameInfo = candidate_name ? ` The candidate's name is ${candidate_name}.` : '';
-  const p = `Generate between 5 and 10 concise, varied interview questions for a ${role} working in a film production house.${nameInfo}${rateInfo}
+  const rateInfo = hourly_rate ? ` The candidate's hourly rate is €${hourly_rate}/h.` : "";
+  const nameInfo = candidate_name ? ` The candidate's name is ${candidate_name}.` : "";
+  const prompt = `Generate between 5 and 10 concise, varied interview questions for a ${role} working in a film production house.${nameInfo}${rateInfo}
   These should test practical experience, creative decision-making, teamwork, and problem-solving.
   Return a JSON array of strings only.`;
-  const txt = await gText(p);
+
+  const txt = await callOpenRouter(prompt);
   const js = safeJSON(txt);
-  const qs = Array.isArray(js) && js.length ? js : [
-    `What are your key responsibilities as a ${role}?`,
-    `How do you approach challenges on set as a ${role}?`,
-    `Describe a situation where your lighting setup changed the mood of a scene.`,
-    `How do you ensure safety and efficiency when handling lighting equipment?`,
-    `What’s one technical innovation you’ve adopted recently in your lighting work?`,
-  ];
+  const qs = Array.isArray(js) && js.length
+    ? js
+    : [
+        `What are your key responsibilities as a ${role}?`,
+        `How do you approach challenges on set as a ${role}?`,
+        `Describe a situation where your lighting setup changed the mood of a scene.`,
+        `How do you ensure safety and efficiency when handling lighting equipment?`,
+        `What’s one technical innovation you’ve adopted recently in your lighting work?`,
+      ];
+
   sessions.set(session_id, { role, questions: qs, answers: [], scores: [], hourly_rate, candidate_name });
   res.json({ questions: qs });
 });
 
-// ========== Record answer + transcribe + score ==========
-// app.post('/grade-answer', upload.single('video'), async (req, res) => {
+// ========== Grade text answer ==========
+// app.post("/grade-text", async (req, res) => {
+//   const { question, answer, role } = req.body;
 //   try {
-//     const { question, role, session_id } = req.body;
-//     if (!req.file) return res.status(400).json({ error: 'Missing video file' });
+//     const prompt = `
+// You are an AI interviewer evaluating answers for the role of ${role}.
+// Question: ${question}
+// Candidate Answer: ${answer}
+// Return JSON like {"score": number, "feedback": "short feedback"} (score 0–10).`;
 
-//     // Do NOT persist the uploaded media to disk; use buffer directly
-
-//     const audioB64 = base64(req.file.buffer);
-//     const transcribePrompt = [
-//       {
-//         text: "Transcribe this spoken answer clearly into English text only. Remove fillers and background noise."
-//       },
-//       {
-//         inlineData: {
-//           data: audioB64,
-//           mimeType: req.file.mimetype || 'audio/webm'
-//         }
-//       }
-//     ];
-
-//     const tr = await model.generateContent(transcribePrompt);
-//     const transcript = (tr.response.text() || '').trim();
-
-//     const scorePrompt = `Question: ${question}\nRole: ${role}\nAnswer: """${transcript}"""\n
-//       Evaluate the candidate’s relevance, clarity, and understanding of ${role} duties.
-//       Give a JSON: {"score": number (0-10), "feedback": "1 sentence feedback"}.`;
-//     const scoreTxt = await gText(scorePrompt);
-//     const scored = safeJSON(scoreTxt) || { score: 6, feedback: 'Default score.' };
-
-//     if (session_id && sessions.has(session_id)) {
-//       const sess = sessions.get(session_id);
-//       sess.answers.push(transcript);
-//       sess.scores.push(scored.score);
-//     }
-
-//     res.json({
-//       ok: true,
-//       transcript,
-//       score: scored.score,
-//       feedback: scored.feedback
-//     });
+//     const txt = await callOpenRouter(prompt);
+//     const json = safeJSON(txt) || { score: 5, feedback: "Default feedback" };
+//     res.json(json);
 //   } catch (err) {
-//     console.error('grade-answer failed:', err);
-//     res.status(500).json({ error: 'Failed to process answer' });
+//     res.status(500).json({ error: err.message });
 //   }
 // });
-app.post('/grade-text', async (req, res) => {
+app.post("/grade-text", async (req, res) => {
   const { question, answer, role } = req.body;
   try {
     const prompt = `
-    You are an AI interviewer evaluating answers for the role of ${role}.
-    Question: ${question}
-    Candidate Answer: ${answer}
-    Return JSON like {"score": number, "feedback": "short feedback"} (score 0–10).
-    `;
+You are an AI interviewer evaluating a candidate for the role of ${role}.
+Question: ${question}
+Answer: ${answer}
+Provide only a short JSON: {"score": number, "feedback": "short constructive feedback"} (score 1–10).`;
 
-    const r = await model.generateContent(prompt);
-    const txt = r.response.text();
-    const json = safeJSON(txt) || { score: 5, feedback: "Default feedback" };
+    const txt = await callOpenRouter(prompt);
+    let json = safeJSON(txt);
+
+    // ✅ If model returns non-JSON text like "Score: 8/10"
+    if (!json) {
+      const m = txt.match(/(\d{1,2})(?:\/10)?/);
+      const num = m ? Math.min(10, Math.max(0, parseInt(m[1]))) : 5;
+      json = { score: num, feedback: txt.replace(/[\n\r]/g, " ").slice(0, 150) };
+    }
+
+    // ✅ Always ensure numeric score + feedback
+    if (typeof json.score !== "number") json.score = 5;
+    if (!json.feedback) json.feedback = "Good response.";
+
     res.json(json);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("grade-text error:", err);
+    res.status(500).json({ error: "Grading failed: " + err.message });
   }
 });
 
-// ========== Final summary + average score ==========
-app.post('/gemini/summary', async (req, res) => {
+
+// ========== Summary ==========
+app.post("/gemini/summary", async (req, res) => {
   try {
     const { session_id } = req.body;
     const sess = sessions.get(session_id) || {};
     const qa = (sess.questions || [])
-      .map((q, i) => `Q: ${q}\nA: ${sess.answers?.[i] || '[no response]'}`)
-      .join('\n');
+      .map((q, i) => `Q: ${q}\nA: ${sess.answers?.[i] || "[no response]"}`)
+      .join("\n");
 
-    const p = `You are evaluating an interview for a ${sess.role || 'candidate'} role.
-      Summarize their performance, mention strengths/weaknesses, and compute average score from all answers (0–10 scale).
-      Return pure JSON: {"summary": "short summary paragraph", "score": number}. 
-      Interview:\n${qa}`;
+    const prompt = `You are evaluating an interview for a ${sess.role || "candidate"} role.
+Summarize their performance, mention strengths/weaknesses, and compute average score (0–10).
+Return JSON: {"summary": "short summary", "score": number}.
+Interview:\n${qa}`;
 
-    const t = await gText(p);
-    const js = safeJSON(t);
+    const txt = await callOpenRouter(prompt);
+    const js = safeJSON(txt);
     if (js?.score === undefined && sess.scores?.length)
       js.score = Math.round(sess.scores.reduce((a, b) => a + b, 0) / sess.scores.length);
-    res.json(js || { summary: 'Fallback summary', score: 6 });
+    res.json(js || { summary: "Fallback summary", score: 6 });
   } catch (err) {
-    console.error('summary failed:', err);
-    res.status(500).json({ error: 'Failed to summarize interview' });
+    res.status(500).json({ error: "Failed to summarize interview" });
   }
 });
 
-// ========== Serve ==========
+// ========== Start Server ==========
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server running on http://0.0.0.0:${PORT}`));

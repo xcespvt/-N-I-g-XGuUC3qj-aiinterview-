@@ -2,9 +2,9 @@
 
 // ==== Heygen API config with rotation ====
 const HEYGEN_KEYS = [
-  'sk_V2_hgu_kxjYE74rslk_guugdgxvZebORGQVKXzZ4HYxgI8yoK2I',
-  'sk_V2_hgu_kdm5NWurfdq_EXTqTF6pTOXwLlxtPkWP3YcjVFGTPnne',
-  'sk_V2_hgu_kLSjdmVpZI7_msA3AjqSYDExJxHl5Y5iiMY5IHwgpDg3'
+  'sk_V2_hgu_kahMRZuiVII_HTXSumNoiaykeRJ8Kvmp0FbUxYoiPJod',
+  'sk_V2_hgu_kqPJprW8Od8_QK8JBqDX59Rmjmz8EKUSaUitk0gWRkkm',
+  'sk_V2_hgu_kWJ7D2mKPir_4L1Sh3q7tytE47UW6w4S1j4gmU0JDozx'
   // Add more keys here if you have them
 ];
 
@@ -295,29 +295,29 @@ async function startInterview() {
   setTimeout(() => askNext(role, username), 1200);
 }
 
-async function transcribeSpeech(maxSeconds = 60) {
-  return new Promise((resolve) => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+// async function transcribeSpeech(maxSeconds = 60) {
+//   return new Promise((resolve) => {
+//     const SpeechRecognition =
+//       window.SpeechRecognition || window.webkitSpeechRecognition;
+//     const recognition = new SpeechRecognition();
+//     recognition.lang = 'en-US';
+//     recognition.interimResults = false;
+//     recognition.maxAlternatives = 1;
 
-    let finalTranscript = '';
+//     let finalTranscript = '';
 
-    recognition.onresult = (event) => {
-      finalTranscript = event.results[0][0].transcript;
-    };
-    recognition.onend = () => resolve(finalTranscript);
+//     recognition.onresult = (event) => {
+//       finalTranscript = event.results[0][0].transcript;
+//     };
+//     recognition.onend = () => resolve(finalTranscript);
 
-    recognition.start();
+//     recognition.start();
 
-    setTimeout(() => {
-      recognition.stop();
-    }, maxSeconds * 1000);
-  });
-}
+//     setTimeout(() => {
+//       recognition.stop();
+//     }, maxSeconds * 1000);
+//   });
+// }
 
 
 // async function askNext(role, username) {
@@ -441,6 +441,72 @@ async function transcribeSpeech(maxSeconds = 60) {
 // }
 
 // ==== UI bindings ====
+// --- only speech recognition improved ---
+async function transcribeSpeech(maxSeconds = 60) {
+  return new Promise((resolve) => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.warn("SpeechRecognition API not supported in this browser.");
+      resolve("");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = true; // ✅ get partials faster
+    recognition.continuous = false;    // ✅ stop after brief silence
+
+    let transcript = "";
+    let timeout;
+    let resolved = false;
+
+    recognition.onresult = (event) => {
+      const result = event.results[event.results.length - 1];
+      const text = result[0].transcript.trim();
+      if (text) {
+        transcript = text;
+        // Reset silence timer when speech continues
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            recognition.stop();
+            resolve(transcript.trim());
+          }
+        }, 1000); // 1s pause threshold = FAST responsiveness
+      }
+    };
+
+    recognition.onerror = (e) => {
+      console.warn("Speech recognition error:", e.error);
+      if (!resolved) {
+        resolved = true;
+        resolve(transcript.trim());
+      }
+    };
+
+    recognition.onend = () => {
+      if (!resolved) {
+        resolved = true;
+        resolve(transcript.trim());
+      }
+    };
+
+    recognition.start();
+
+    // Safety cutoff in case recognition hangs
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        try { recognition.stop(); } catch {}
+        resolve(transcript.trim());
+      }
+    }, maxSeconds * 1000);
+  });
+}
+
+
 
 async function askNext(role, username) {
   if (qIndex >= questions.length) {
