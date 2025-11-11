@@ -13,12 +13,7 @@ app.use(express.json());
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "login.html")));
 app.use(express.static(path.join(__dirname, ".")));
 
-const OPENROUTER_KEYS = [
-  "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",
-  "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",
-  "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"
-];
-const OPENROUTER_API_KEY = OPENROUTER_KEYS[Math.floor(Math.random() * OPENROUTER_KEYS.length)];
+const OPENROUTER_KEYS = process.env.OPENROUTER_API_KEYS || "";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 function safeJSON(txt) {
