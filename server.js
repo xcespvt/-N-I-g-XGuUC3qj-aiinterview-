@@ -38,7 +38,7 @@ async function callOpenRouter(prompt) {
   const r = await fetch(OPENROUTER_URL, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${OPENROUTER_API_KEYS}`,
+      Authorization: `Bearer ${OPENROUTER_KEYS}`,
       "Content-Type": "application/json",
       "HTTP-Referer": "http://aiavatartest.hnsolutions.in",
       "X-Title": "AI Avatar Interview",
