@@ -295,69 +295,23 @@ async function startInterview() {
   setTimeout(() => askNext(role, username), 1200);
 }
 
-// async function transcribeSpeech(maxSeconds = 60) {
-//   return new Promise((resolve) => {
-//     const SpeechRecognition =
-//       window.SpeechRecognition || window.webkitSpeechRecognition;
-//     const recognition = new SpeechRecognition();
-//     recognition.lang = 'en-US';
-//     recognition.interimResults = false;
-//     recognition.maxAlternatives = 1;
-
-//     let finalTranscript = '';
-
-//     recognition.onresult = (event) => {
-//       finalTranscript = event.results[0][0].transcript;
-//     };
-//     recognition.onend = () => resolve(finalTranscript);
-
-//     recognition.start();
-
-//     setTimeout(() => {
-//       recognition.stop();
-//     }, maxSeconds * 1000);
-//   });
-// }
-
 async function transcribeSpeech(maxSeconds = 60) {
   return new Promise((resolve) => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      log("⚠️ SpeechRecognition not supported in this browser.");
-      resolve("");
-      return;
-    }
-
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    let finalTranscript = "";
+    let finalTranscript = '';
 
     recognition.onresult = (event) => {
       finalTranscript = event.results[0][0].transcript;
     };
-
-    recognition.onerror = (event) => {
-      log(`⚠️ Speech recognition error: ${event.error}`);
-      resolve("");
-    };
-
-    recognition.onspeechend = () => {
-      recognition.stop();
-    };
-
     recognition.onend = () => resolve(finalTranscript);
 
-    try {
-      recognition.start();
-      log("🎙️ Listening...");
-    } catch (err) {
-      log("⚠️ Could not start speech recognition, check mic permission.");
-      resolve("");
-    }
+    recognition.start();
 
     setTimeout(() => {
       recognition.stop();
@@ -365,6 +319,128 @@ async function transcribeSpeech(maxSeconds = 60) {
   });
 }
 
+
+// async function askNext(role, username) {
+//   if (qIndex >= questions.length) {
+//     // finalize
+//     const r = await fetch('/gemini/summary', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ session_id: sessionInfo.session_id }),
+//     });
+//     const js = await r.json();
+//     log(`<b>Summary:</b> ${js.summary}<br><b>Score:</b> ${js.score}/10`);
+//     await fetch('/results/save', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({
+//         username,
+//         role,
+//         candidate_name: candidateProfile?.name,
+//         hourly_rate: candidateProfile?.hourlyRate,
+//         address: candidateProfile?.address,
+//         questions,
+//         answers,
+//         score: js.score,
+//         summary: js.summary,
+//       }),
+//     });
+//     log('💾 Results saved.');
+//     DOM.resultBox.classList.remove('hidden');
+//     DOM.resultBox.textContent = `Final Score: ${js.score}/10 — ${js.summary}`;
+//     return;
+//   }
+
+//   const q = questions[qIndex];
+//   log(`<b>Q${qIndex + 1}:</b> ${q}`);
+//   await say(sessionInfo.session_id, q); // avatar speaks
+//   log('🗣️ Avatar asked question.');
+
+//   // Show Start Answer UI (user clicks when avatar finishes)
+//   DOM.answerCta.classList.remove('hidden');
+//   DOM.answerHint.textContent = '⏳ You can answer within 1 minute';
+//   DOM.startAnswerBtn.disabled = false;
+//   DOM.endAnswerBtn.classList.add('hidden');
+//   DOM.endAnswerBtn.disabled = true;
+
+//   // One-time handler for this question
+//   const onClick = async () => {
+//     DOM.startAnswerBtn.disabled = true;
+//     DOM.answerHint.textContent = 'Recording your answer…';
+
+//     const blobPromise = startRecording(60);
+//     DOM.endAnswerBtn.classList.remove('hidden');
+//     DOM.endAnswerBtn.disabled = false;
+
+//     const onEnd = async () => {
+//       DOM.endAnswerBtn.disabled = true;
+//       await stopRecording();
+//     };
+
+//     // Proceed to upload when recording stops (either by timeout or button)
+//     blobPromise.then(async (blob) => {
+//       DOM.endAnswerBtn.classList.add('hidden');
+//       DOM.endAnswerBtn.removeEventListener('click', onEnd);
+
+//       // const filename = `response_q${qIndex + 1}.webm`;
+//       // const form = new FormData();
+//       // form.append('video', blob, filename);
+//       // form.append('question', q);
+//       // form.append('role', role);
+
+//       // log('📤 Uploading for transcription & scoring…');
+//       // const resp = await fetch('/grade-answer', { method: 'POST', body: form });
+//       // const data = await resp.json();
+
+//       // Use browser SpeechRecognition (Web Speech API)
+//       log('🎤 Transcribing your answer...');
+//       const transcript = await transcribeSpeech(60); // up to 60 seconds
+
+//       log(`📝 Transcript: ${transcript}`);
+
+//       const resp = await fetch('/grade-text', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ question: q, answer: transcript, role }),
+//       });
+//       const data = await resp.json();
+
+//       if (resp.ok) {
+//         const { score, feedback } = data;
+//         log(`✅ Score: ${score}/10`);
+//         if (feedback) log(`💬 Feedback: ${feedback}`);
+//         answers.push(transcript);
+//       } else {
+//         log(`❌ Grading failed: ${data.error || 'Unknown error'}`);
+//       }
+
+
+//       if (resp.ok) {
+//         const { transcript, score, feedback } = data;
+//         log(`📝 Transcript: ${transcript}`);
+//         log(`✅ Score: ${score}/10`);
+//         if (feedback) log(`💬 Feedback: ${feedback}`);
+//         answers.push(transcript || `[Video: ${filename}]`);
+//       } else {
+//         log(`❌ Grading failed: ${data.error || 'Unknown error'}`);
+//       }
+
+//       // Hide CTA before moving to next question
+//       DOM.answerCta.classList.add('hidden');
+//       qIndex++;
+//       askNext(role, username);
+//     });
+
+//     DOM.endAnswerBtn.addEventListener('click', onEnd, { once: true });
+//     DOM.startAnswerBtn.removeEventListener('click', onClick);
+//   };
+
+//   // attach handler
+//   DOM.startAnswerBtn.removeEventListener('click', onClick);
+//   DOM.startAnswerBtn.addEventListener('click', onClick, { once: true });
+// }
+
+// ==== UI bindings ====
 
 async function askNext(role, username) {
   if (qIndex >= questions.length) {
